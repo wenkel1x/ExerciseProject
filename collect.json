@@ -1,8 +1,8 @@
 {
-    "get_after_num": 5,
+    "get_after_num": 4,
     "output_sheet_name":"Loading by model",
     "fac_name":["QMF","QMN","QCG"],
-    "model_name":[],
+    "model_name":["SEL"],
     "export_loading_index":{
         "QMF":{
             "FAB":{"rack":3,"server":4,"mb":5,"sb":6,"fa":8},
@@ -22,22 +22,22 @@
         }
     },
     "FAB":{
-        "rack_key_word": "Oct",
-        "server_key_word": "Oct Server QTY",
-        "MB_key_word": "Oct MB QTY",
-        "SB_Key_word": "Oct SB QTY"
+        "rack_key_word": "",
+        "server_key_word": "",
+        "MB_key_word": "",
+        "SB_Key_word": ""
     },
     "AMA":{
-        "rack_key_word": "Oct",
-        "server_key_word": "Oct Server QTY",
-        "MB_key_word": "Oct MB QTY",
-        "SB_Key_word": "Oct SB QTY"
+        "rack_key_word": "",
+        "server_key_word": "",
+        "MB_key_word": "",
+        "SB_Key_word": ""
     },
     "MSF":{
-        "rack_key_word": "Oct",
-        "server_key_word": "Oct Server QTY",
-        "MB_key_word": "Oct MB QTY",
-        "SB_Key_word": "Oct SB QTY"
+        "rack_key_word": "",
+        "server_key_word": "",
+        "MB_key_word": "",
+        "SB_Key_word": ""
     },
     "QCT":{
         "rack_key_word":"",

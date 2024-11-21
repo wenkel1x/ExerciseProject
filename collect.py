@@ -46,20 +46,38 @@ class base():
                 fa_data = last_row.iloc[:,fa_index:fa_index+self.get_after_num]  
                 self.export_to_excel(fa_data,self.export_file_index[fac][self.model_name]["fa"])
                 last_row = df.tail(2).head(1)
-            rack_index = columns_index.index(self.rack_fields)
-            server_index = columns_index.index(self.server_fields)
-            mb_index = columns_index.index(self.mb_fields)
-            sb_index = columns_index.index(self.sb_fields)
-            
-            rack_data = last_row.iloc[:,rack_index:rack_index+self.get_after_num]
-            server_data = last_row.iloc[:,server_index:server_index+self.get_after_num]
-            mb_data = last_row.iloc[:,mb_index:mb_index+self.get_after_num]
-            sb_data = last_row.iloc[:,sb_index:sb_index+self.get_after_num]
-            
-            self.export_to_excel(rack_data,self.export_file_index[fac][self.model_name]["rack"])
-            self.export_to_excel(server_data,self.export_file_index[fac][self.model_name]["server"])
-            self.export_to_excel(mb_data,self.export_file_index[fac][self.model_name]["mb"])
-            self.export_to_excel(sb_data,self.export_file_index[fac][self.model_name]["sb"])
+
+            try:
+                rack_index = columns_index.index(self.rack_fields)
+                if self.model_name == "SEL":
+                    filter_row = df[(df['Project'] == "L21") & (df['Type'] == "FCST")]
+                    rack_data = filter_row.iloc[:,rack_index:rack_index+self.get_after_num]
+                else:
+                    rack_data = last_row.iloc[:,rack_index:rack_index+self.get_after_num]
+                self.export_to_excel(rack_data,self.export_file_index[fac][self.model_name]["rack"])
+            except Exception as e:
+                print(f"no data find in {fac} columns {self.rack_fields}:{e}")
+
+            try:
+                server_index = columns_index.index(self.server_fields)
+                server_data = last_row.iloc[:,server_index:server_index+self.get_after_num]
+                self.export_to_excel(server_data,self.export_file_index[fac][self.model_name]["server"])
+            except Exception as e:
+                print(f"no data find in {fac} columns {self.rack_fields}:{e}")
+
+            try:
+                mb_index = columns_index.index(self.mb_fields)
+                mb_data = last_row.iloc[:,mb_index:mb_index+self.get_after_num]
+                self.export_to_excel(mb_data,self.export_file_index[fac][self.model_name]["mb"])
+            except Exception as e:
+                print(f"no data find in {fac} columns {self.rack_fields}:{e}")
+
+            try:
+                sb_index = columns_index.index(self.sb_fields)
+                sb_data = last_row.iloc[:,sb_index:sb_index+self.get_after_num]
+                self.export_to_excel(sb_data,self.export_file_index[fac][self.model_name]["sb"])
+            except Exception as e:
+                print(f"no data find in {fac} columns {self.rack_fields}:{e}")
 
     def get_month_abbr(self):
         now = datetime.now()
@@ -84,7 +102,6 @@ class base():
         df = pd.DataFrame(data)
         with pd.ExcelWriter(self.export_file, mode='a', engine='openpyxl',if_sheet_exists='overlay') as writer:
             df.to_excel(writer,sheet_name=self.output_sheet_name,index=False,header=False,startrow=row-1,startcol=self.col)
-    
 
 class FAB(base):
     def __init__(self,read_file,export_file):
@@ -104,7 +121,6 @@ class NTA(base):
 class SEL(base):
     def __init__(self,read_file,export_file):
         super().__init__(read_file,export_file)
-
 def main():
     get_cwd = os.getcwd()
     all_files = glob.glob('*.xlsx')
