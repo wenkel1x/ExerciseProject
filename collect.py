@@ -1,4 +1,3 @@
-
 from datetime import datetime
 from openpyxl import load_workbook
 import os
@@ -9,21 +8,20 @@ import json
 import sys
 #set factory different model
 class base():
-    def __init__(self,read_file,export_file):
+    def __init__(self,read_file,export_file,currency_month,get_num):
+        self.currency_month_abbr=currency_month
         self.read_file = read_file
         self.export_file = export_file
         self.model_name = self.__class__.__name__
+        self.get_after_num = get_num
         #self.exec_init(data)
-        #month_list = self.get_month_abbr()
         
     def exec_init(self,data):
-        currency_month_abbr = datetime.now().strftime("%b")
-        self.rack_fields = data.get(self.model_name,{}).get("rack_key_word",currency_month_abbr) or currency_month_abbr
-        self.server_fields = data.get(self.model_name,{}).get("server_key_word",f"{currency_month_abbr} Server QTY") or "{} Server QTY".format(currency_month_abbr)
-        self.mb_fields = data.get(self.model_name,{}).get("MB_key_word",f"{currency_month_abbr} MB QTY") or "{} MB QTY".format(currency_month_abbr)
-        self.sb_fields = data.get(self.model_name,{}).get("SB_Key_word",f"{currency_month_abbr} SB QTY") or "{} SB QTY".format(currency_month_abbr)
+        self.rack_fields = data.get(self.model_name,{}).get("rack_key_word",self.currency_month_abbr) or self.currency_month_abbr
+        self.server_fields = data.get(self.model_name,{}).get("server_key_word",f"{self.currency_month_abbr} Server QTY") or "{} Server QTY".format(self.currency_month_abbr)
+        self.mb_fields = data.get(self.model_name,{}).get("MB_key_word",f"{self.currency_month_abbr} MB QTY") or "{} MB QTY".format(self.currency_month_abbr)
+        self.sb_fields = data.get(self.model_name,{}).get("SB_Key_word",f"{self.currency_month_abbr} SB QTY") or "{} SB QTY".format(self.currency_month_abbr)
         self.export_file_index = data.get("export_loading_index")
-        self.get_after_num = data.get("get_after_num",5) or 5
         self.output_sheet_name = data.get("output_sheet_name","Loading by model") or "Loading by model"
         self.model_fac = data.get("fac_name",["QMF","QMN","QCG"]) or ["QMF","QMN","QCG"]
         self.col = self.get_excel_col()
@@ -78,14 +76,6 @@ class base():
                 self.export_to_excel(sb_data,self.export_file_index[fac][self.model_name]["sb"])
             except Exception as e:
                 print(f"no data find in {fac} columns {self.rack_fields}:{e}")
-
-    def get_month_abbr(self):
-        now = datetime.now()
-        month_abbr = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
-        current_month_index=now.month - 2
-        export_month_index=[(current_month_index + i ) % 12 for i in range(self.get_after_num)]
-        month_list = [month_abbr[i] for i in export_month_index]
-        return month_list
     
     def get_excel_col(self):
         workbook = load_workbook(self.export_file)
@@ -121,8 +111,22 @@ class NTA(base):
 class SEL(base):
     def __init__(self,read_file,export_file):
         super().__init__(read_file,export_file)
-def main():
-    get_cwd = os.getcwd()
+
+global json_path
+current__file_path = os.path.abspath(__file__)
+current__dir=os.path.dirname(current__file_path)
+json_path=os.path.join(current__dir,"collect.json")
+Readme_path=os.path.join(current__dir,"README.txt")
+def edit_json_fle(file):
+    if file=="Json": file=json_path 
+    else: file=Readme_path
+    try:
+        if not os.path.exists(file):
+            raise FileNotFoundError(f"{file} not found")
+        os.startfile(file)
+    except Exception as e:
+        print(f"error: {e}")
+def main(get_cwd,startmonth,monthnum):
     all_files = glob.glob('*.xlsx')
     pattern = re.compile(r'^(fab|ama|msf|qct|nta|sel).*\.xlsx$',re.IGNORECASE)
     loading_pattern = re.compile(r'.*loading.*\.xlsx$',re.IGNORECASE)
@@ -133,8 +137,6 @@ def main():
     if not loading_file_name[0]:
         raise ValueError("No loading field is included, Can't find any export data file in {} path".format(get_cwd))
     loading_file_path = os.path.join(get_cwd,loading_file_name[0])
-    jsondata={}
-    json_path=os.path.join(get_cwd,"collect.json")
     try:
         with open(json_path,'r') as file:
             jsondata = json.load(file)
@@ -151,7 +153,7 @@ def main():
                 print("collect {} data from file {}".format(model,file))
                 try:
                     cls = getattr(sys.modules[__name__],model)
-                    fac_work = cls(os.path.join(get_cwd,file),loading_file_path)
+                    fac_work = cls(os.path.join(get_cwd,file,startmonth,monthnum),loading_file_path)
                     fac_work.exec_init(jsondata)
                 except AttributeError:
                     print(f"Class {model} not found")

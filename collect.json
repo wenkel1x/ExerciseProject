@@ -1,8 +1,7 @@
 {
-    "get_after_num": 4,
     "output_sheet_name":"Loading by model",
     "fac_name":["QMF","QMN","QCG"],
-    "model_name":["SEL"],
+    "model_name":["FAB","MSF","AMA","QCT","NTA","SEL"],
     "export_loading_index":{
         "QMF":{
             "FAB":{"rack":3,"server":4,"mb":5,"sb":6,"fa":8},
@@ -41,20 +40,20 @@
     },
     "QCT":{
         "rack_key_word":"",
-        "server_key_word":"",
-        "MB_key_word":"",
-        "SB_Key_word":""
+        "server_key_word": "",
+        "MB_key_word": "",
+        "SB_Key_word": ""
     },
     "NTA":{
         "rack_key_word":"",
-        "server_key_word":"",
-        "MB_key_word":"",
-        "SB_Key_word":""
+        "server_key_word": "",
+        "MB_key_word": "",
+        "SB_Key_word": ""
     },
     "SEL":{
         "rack_key_word":"",
-        "server_key_word":"",
-        "MB_key_word":"",
-        "SB_Key_word":""
+        "server_key_word": "",
+        "MB_key_word": "",
+        "SB_Key_word": ""
     }
 }
