@@ -14,7 +14,10 @@ def clear_output_text():
     output_text.delete(1.0,tk.END)
     output_text.config(state='disabled')
 
-def startmain(path,startmonth,monthnum):
+def startmain():
+    path=file_path_entry.get()
+    startmonth=month_menu.get()
+    monthnum=monthNum_entry.get()
     clear_output_text()
     captured_output = io.StringIO()
 
@@ -39,7 +42,7 @@ def startmain(path,startmonth,monthnum):
     threading.Thread(target=run).start()
 
 root=tk.Tk()
-root.geometry("450x350")
+root.geometry("500x400")
 root.title("Oversea Loading by model summary")
 subtitle_lable = tk.Label(root,text="create by RosieWang",font=("Arial",12),fg="gray")
 subtitle_lable.pack(pady=10)
@@ -51,7 +54,6 @@ file_path_lable.pack(side="left",padx=5)
 file_path_entry=tk.Entry(file_frame,width=40)
 file_path_entry.pack(side="left",padx=5)
 file_path_entry.insert(0,os.getcwd())
-
 
 #开始月份
 month_frame=tk.Frame(root)
@@ -83,13 +85,13 @@ edit_button_1 = tk.Button(edit_frame,text="编辑配置文件",command=lambda: c
 edit_button_1.pack(side="left",padx=10)
 edit_button_2 = tk.Button(edit_frame,text="README.txt",command=lambda: cl.edit_json_fle("Readme"))
 edit_button_2.pack(side="left",padx=10)
-run_button =tk.Button(edit_frame, text="运行主程序", command=lambda path=file_path_entry.get(),startmonth=month_menu.get(),monthnum=monthNum_entry.get():startmain(path,startmonth,monthnum))
+run_button =tk.Button(edit_frame, text="运行主程序", command=startmain)
 run_button.pack(side="left",padx=10)
 clear_button=tk.Button(edit_frame,text="Clear Button",command=clear_output_text)
 clear_button.pack(side="left",padx=10)
 
-output_text=scrolledtext.ScrolledText(root,width=60,height=20,state='disabled')
-output_text.pack(padx=10,pady=10)
+output_text=scrolledtext.ScrolledText(root,state='disabled')
+output_text.pack(side="left",padx=10,pady=10,fill=tk.BOTH,expand=True)
 
 
 root.mainloop()

@@ -4,6 +4,8 @@
 # 开始月份: excel文件中统计的rack列开始月份，一般为当前月份,除非月初时统计有上个月数据。 
 # 统计月份个数: 需要向后看几个月的数据,一般为向后统计4个月的交期
 # 编辑配置文件：非必要不修改
+# 被统计文件格式应参考FAB model, Excel 表格sheet应以厂区名命名,如QMF QCG QMN, 所有表格sheet名称应注意不能有空格
+# sheet 表格内的表头应放在第一行 Apr	May	Jun	Jul	  Apr MB QTY	May MB QTY	 Jun MB QTY	  Jul MB QTY. 注意AMA 表头是在第二行且格式不一样。
 配置文件详解：
 "output_sheet_name":"Loading by model", #输出文件到loading sheet的名称,也可更改为Loading by Output
 "fac_name":["QMF","QMN","QCG"],  #loading A列合并单元格的所有名称
@@ -28,12 +30,12 @@
     }
 },
 
-#后续为要统计表格列的关键词，当前默认是空值，当为空时程序默认抓取rack列为输入开始月份,例如 Apr.
+#后续为要统计表格列的关键词，当前默认是空值，当为空时程序默认抓取rack列即输入的开始月份,例如 Apr.
 #rack_key_word="Apr"
 #server_key_word="Apr Server QTY"
 #MB_key_word="Apr MB QTY"
 #SB_Key_word="Apr SB QTY"
-#后续以此类推。
+#后续以此类推，后面如果统计表更改可以填入更改的列名称
 "FAB":{
     "rack_key_word": "",
     "server_key_word": "",
