@@ -1,0 +1,77 @@
+#!/bin/bash
+
+#@file
+#@author wenkelx
+#@date 2025-07-01
+#@description: tools Used for multi-machine ssh remote login
+#HOST_FILE text fill format is name,user,ip,pass,tag
+
+HOST_FILE=""
+TARGET_NAME="$1"
+
+if [ -z "$TARGET_NAME" ]; then
+    echo "用法: ./auto_ssh.sh <主机名>"
+    exit 1
+fi
+
+# 查找主机信息
+line=$(grep "$TARGET_NAME," "$HOST_FILE")
+
+if [ -z "$line" ]; then
+    echo "未找到主机 $TARGET_NAME,请检查 host.txt 中的名称是否正确。"
+    exit 1
+fi
+
+# 解析主机信息
+IFS=',' read -r name user ip pass tag <<< "$line"
+
+if sshpass -p "$pass" ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=no "$user@$ip" "echo connected" >/dev/null 2>&1; then
+    echo "SSH 登录成功，进入远程 shell..."
+    exec sshpass -p "$pass" ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=no "$user@$ip"
+else
+    echo "登录失败，可能是 username or IP addr or password已变更。"
+    read -p "是否要更新 Info? (y/n): " choice
+    case "$choice" in
+    y|Y)
+        echo "请选择要更新的内容："
+        echo "1) User"
+        echo "2) IP Address"
+        echo "3) Password"
+        echo "4) tag"
+        read -p "请输入选项编号(如 1 3 或 1,3): " options
+        options=$(echo "$options" | tr ',' ' '| xargs)
+        for opt in $options; do
+        case "$opt" in
+            1)
+              read -p "请输入新的 Username: " new_user
+              sed -i.bak "s/$TARGET_NAME,.*/$TARGET_NAME,$new_user,$ip,$pass,$tag/" "$HOST_FILE"
+              echo "User 已更新为：$new_user."
+              ;;
+            2)
+              read -p "请输入新的 IP Address: " new_ip
+              sed -i.bak "s/$TARGET_NAME,.*/$TARGET_NAME,$user,$new_ip,$pass,$tag/" "$HOST_FILE"
+              echo "IP Address 已更新为：$new_ip."
+              ;;
+            3)
+              read -p "请输入新的 Password: " new_pass
+              sed -i.bak "s/$TARGET_NAME,.*/$TARGET_NAME,$user,$ip,$new_pass,$tag/" "$HOST_FILE"
+              echo "Password 已更新."
+              ;;
+            4)
+              read -p "请输入新的 tag: " new_tag
+              sed -i.bak "s/$TARGET_NAME,.*/$TARGET_NAME,$user,$ip,$pass,$new_tag/" "$HOST_FILE"
+              echo "tag 已更新: $new_tag."
+              ;;
+            *)
+              echo "无效选项."
+              ;;
+            esac
+            echo "Info已更新,请重新尝试连接..."
+        done
+        ;;
+    n|N|*)
+        echo "已取消更新."
+        ;;
+    esac
+fi
+echo "done"
