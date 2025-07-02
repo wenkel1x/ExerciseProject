@@ -11,6 +11,7 @@ TARGET_NAME="$1"
 
 if [ -z "$TARGET_NAME" ]; then
     echo "用法: ./auto_ssh.sh <主机名>"
+    echo "用法: ./auto_ssh.sh add <主机名>,<user>,<ip>,<password>,<系统类型>"
     exit 1
 fi
 
@@ -18,7 +19,13 @@ fi
 line=$(grep "$TARGET_NAME," "$HOST_FILE")
 
 if [ -z "$line" ]; then
-    echo "未找到主机 $TARGET_NAME,请检查 host.txt 中的名称是否正确。"
+    if [ "A$TARGET_NAME" == "Aadd" ]; then
+       read -p "请输入计算机信息 hostname,user,ip,password,tag" options
+       IFS=',' read -r name user ip pass tag <<< "$line"
+       sed -i.bak -e '$a\' -e "$name,$user,$ip,$pass,$tag" "$HOST_FILE"
+       exit 0
+    fi
+    echo "未找到主机 $TARGET_NAME,请检查 host.txt 中的名称是否正确."
     exit 1
 fi
 
@@ -29,7 +36,7 @@ if sshpass -p "$pass" ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=no "$user
     echo "SSH 登录成功，进入远程 shell..."
     exec sshpass -p "$pass" ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=no "$user@$ip"
 else
-    echo "登录失败，可能是 username or IP addr or password已变更。"
+    echo "登录失败，可能是 username:${name} or IP:${ip} or password:${pass} or tag:${tag} 已变更."
     read -p "是否要更新 Info? (y/n): " choice
     case "$choice" in
     y|Y)
