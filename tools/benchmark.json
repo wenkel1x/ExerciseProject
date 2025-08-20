@@ -1,0 +1,11 @@
+{
+    "token":{
+        "user":"",
+        "password":""
+    },
+    "system":"ubuntu20.04",
+    "factor": "0.95",
+    "_comment": "测试throught 设置factor 为0.95,测试time latency设置为1.05",
+    "perf_test_command":"",
+    "get_value_keyword":"Throughput:"
+}
